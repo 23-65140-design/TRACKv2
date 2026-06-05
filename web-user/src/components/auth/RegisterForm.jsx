@@ -1,4 +1,6 @@
 import { useState } from "react";
+import InputField from "../../components/common/InputField";
+import Button from "../../components/common/Button";
 import styles from "../../styles/components/auth/RegisterForm.module.css";
 
 export default function RegisterForm() {
@@ -16,57 +18,53 @@ export default function RegisterForm() {
     <form onSubmit={handleSubmit} className={styles.form}>
       <h2 className={styles.title}>Create Your Account</h2>
 
-      <label className={styles.field}>
-        <span className={styles.label}>USERNAME</span>
-        <input
-          className={styles.input}
+      <div className={styles.field}>
+        <InputField
+          label="USERNAME"
           type="text"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-      </label>
+      </div>
 
-      <label className={styles.field}>
-        <span className={styles.label}>PASSWORD</span>
-        <input
-          className={styles.input}
+      <div className={styles.field}>
+        <InputField
+          label="PASSWORD"
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-      </label>
+      </div>
 
-      <label className={styles.field}>
-        <span className={styles.label}>CONFIRM PASSWORD</span>
-        <input
-          className={styles.input}
+      <div className={styles.field}>
+        <InputField
+          label="CONFIRM PASSWORD"
           type="password"
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
-      </label>
+      </div>
 
-      <label className={styles.field}>
-        <span className={styles.label}>ACCOUNT CODE</span>
-        <input
-          className={styles.input}
+      <div className={styles.field}>
+        <InputField
+          label="ACCOUNT CODE"
           type="text"
           placeholder="Account Code"
           value={accountCode}
           onChange={(e) => setAccountCode(e.target.value)}
           required
         />
-      </label>
+      </div>
 
-      <button className={styles.primaryButton} type="submit">
+      <Button className={styles.primaryButton} type="submit" variant="primary">
         Register
-      </button>
+      </Button>
 
       <p className={styles.helpText}>
         Need an Account Code? <a href="/request-account-code">Request one Here</a>
@@ -74,13 +72,14 @@ export default function RegisterForm() {
 
       <div className={styles.loginAction}>
         <span className={styles.loginText}>Already have an Account?</span>
-        <button
+        <Button
           type="button"
           className={styles.secondaryButton}
+          variant="secondary"
           onClick={() => (window.location.href = "/login")}
         >
           Login
-        </button>
+        </Button>
       </div>
     </form>
   );

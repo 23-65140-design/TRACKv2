@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
+import InputField from "../../components/common/InputField";
+import Button from "../../components/common/Button";
 import styles from "../../styles/components/auth/LoginForm.module.css";
 
 export default function LoginForm() {
@@ -19,56 +21,56 @@ export default function LoginForm() {
     <form onSubmit={handleSubmit} className={styles.form}>
       <h2 className={styles.title}>Welcome Back</h2>
 
-      <label className={styles.field}>
-        <span className={styles.label}>USERNAME</span>
-        <input
-          className={styles.input}
+      <div className={styles.field}>
+        <InputField
+          label="USERNAME"
           type="text"
           placeholder="JohnDoe"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
-      </label>
+      </div>
 
-      <label className={styles.field}>
-        <span className={styles.label}>PASSWORD</span>
-        <input
-          className={styles.input}
+      <div className={styles.field}>
+        <InputField
+          label="PASSWORD"
           type="password"
           placeholder="********"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-      </label>
+      </div>
 
       <div className={styles.forgotLink}>
         <a href="/forgot-password">FORGOT PASSWORD?</a>
       </div>
 
-      <button className={styles.primaryButton} type="submit">
+      <Button type="submit" variant="primary" className={styles.primaryButton}>
         Login
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
+        variant="google"
         className={styles.googleButton}
         onClick={handleGoogleLogin}
+        icon={<FcGoogle />}
       >
-        <FcGoogle className={styles.googleIcon} />
         Continue With Google
-      </button>
+      </Button>
 
       <div className={styles.registerSection}>
         <span className={styles.registerText}>New to the institution?</span>
-        <button
+        <Button
           type="button"
+          variant="secondary"
           className={styles.secondaryButton}
           onClick={() => (window.location.href = "/register")}
         >
           Register
-        </button>
+        </Button>
       </div>
     </form>
   );
