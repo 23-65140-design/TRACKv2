@@ -5,6 +5,7 @@ import SelectDropdown from "../common/SelectDropdown";
 import RadioGroup from "../common/RadioGroup";
 import FileAttachment from "../common/FileAttachment";
 import styles from "../../styles/components/events/CreateEventForm.module.css";
+import EventColor from "../events/EventColor";
 
 export default function CreateEventForm() {
   const [event, setEvent] = useState({
@@ -49,23 +50,14 @@ export default function CreateEventForm() {
       </div>
       <div className={styles.sectionContent}>
         <div className={styles.section}>
-            <div className={styles.col}>
-              <div className={styles.label}>EVENT COLOR</div>
-              <div className={styles.colorSwatches}>
-                {["Grey", "Red", "Yellow", "Blue"].map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    className={`${styles.swatch} ${styles[color.toLowerCase()]} ${
-                      event.color === color ? styles.selected : ""
-                    }`}
-                    onClick={() => updateField("color", color)}
-                  >
-                    {color}
-                  </button>
-                ))}
-              </div>
-            </div>
+<div className={styles.row}>
+  <div className={styles.col}>
+    <EventColor
+      value={event.color}
+      onChange={(colorValue) => updateField("color", colorValue)}
+    />
+  </div>
+</div>
             <div className={styles.col}>
               <div className={styles.label}>VISIBILITY OF EVENT</div>
               <RadioGroup

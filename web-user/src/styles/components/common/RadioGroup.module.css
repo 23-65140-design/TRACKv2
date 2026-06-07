@@ -5,7 +5,7 @@
   flex-direction: column;
   gap: 0.5rem;
   background: var(--radio-button-background);
-  width: fit-content;
+  width: stretch;
   padding: 0.25rem;
   border-radius: 10px;
 }
@@ -20,13 +20,14 @@
 
 .options {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.6rem;
+  
 }
 
 .radioLabel {
   display: inline-flex;
   align-items: center;
+  width: stretch;
   justify-content: center;
   padding: 0.5rem 1rem;
   border-radius: 10px;
@@ -44,11 +45,13 @@
   opacity: 0;
   width: 0;
   height: 0;
+  
 }
 
 /* Checked state – active button */
 .radioLabel:has(input:checked) {
   background: var(--primary-color);
   color: var(--tertiary-color);
+  width: stretch;
 }
 
