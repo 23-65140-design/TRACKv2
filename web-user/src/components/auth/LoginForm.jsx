@@ -1,16 +1,34 @@
 import { useState } from "react";
+import axios from "axios";
 import { FcGoogle } from "react-icons/fc";
-import InputField from "../../components/common/InputField";
-import Button from "../../components/common/Button";
 import styles from "../../styles/components/auth/LoginForm.module.css";
 
 export default function LoginForm() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempt", { username, password });
+    setError("");
+    setLoading(true);
+    try {
+      const apiBase = import.meta.env.VITE_API_URL || "http://localhost:3001";
+      const res = await axios.post(`${apiBase}/api/auth/login`, { email, password });
+      if (res.data && res.data.ok && res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        // optionally store user
+        localStorage.setItem('user', JSON.stringify(res.data.user || {}));
+        window.location.href = '/';
+      } else {
+        setError((res.data && res.data.message) || 'Login failed');
+      }
+    } catch (err) {
+      setError(err?.response?.data?.message || err.message || 'Server error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -21,56 +39,58 @@ export default function LoginForm() {
     <form onSubmit={handleSubmit} className={styles.form}>
       <h2 className={styles.title}>Welcome Back</h2>
 
-      <div className={styles.field}>
-        <InputField
-          label="USERNAME"
-          type="text"
-          placeholder="JohnDoe"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+      <label className={styles.field}>
+        <span className={styles.label}>EMAIL</span>
+        <input
+          className={styles.input}
+          type="email"
+          placeholder="name@pup.edu.ph"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
-      </div>
+      </label>
 
-      <div className={styles.field}>
-        <InputField
-          label="PASSWORD"
+      <label className={styles.field}>
+        <span className={styles.label}>PASSWORD</span>
+        <input
+          className={styles.input}
           type="password"
           placeholder="********"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-      </div>
+      </label>
 
       <div className={styles.forgotLink}>
         <a href="/forgot-password">FORGOT PASSWORD?</a>
       </div>
 
-      <Button type="submit" variant="primary" className={styles.primaryButton}>
-        Login
-      </Button>
+      <button className={styles.primaryButton} type="submit" disabled={loading}>
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
 
-      <Button
+      {error && <p className={styles.errorText}>{error}</p>}
+
+      <button
         type="button"
-        variant="google"
         className={styles.googleButton}
         onClick={handleGoogleLogin}
-        icon={<FcGoogle />}
       >
+        <FcGoogle className={styles.googleIcon} />
         Continue With Google
-      </Button>
+      </button>
 
       <div className={styles.registerSection}>
         <span className={styles.registerText}>New to the institution?</span>
-        <Button
+        <button
           type="button"
-          variant="secondary"
           className={styles.secondaryButton}
           onClick={() => (window.location.href = "/register")}
         >
           Register
-        </Button>
+        </button>
       </div>
     </form>
   );

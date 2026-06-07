@@ -1,4 +1,15 @@
-import React from "react";
-export default function SelectDropdown({options=[]}) {
-  return <select className={styles.select}>{options.map((o,i)=><option key={i}>{o}</option>)}</select>;
+import styles from "../../styles/components/common/SelectDropdown.module.css";
+
+export default function SelectDropdown({ label, options, value, onChange, ...props }) {
+  return (
+    <label className={styles.wrapper}>
+      {label && <span className={styles.label}>{label}</span>}
+      <select className={styles.select} value={value} onChange={onChange} {...props}>
+        <option value="">Select...</option>
+        {options.map(opt => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
+        ))}
+      </select>
+    </label>
+  );
 }

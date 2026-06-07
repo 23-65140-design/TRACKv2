@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import styles from "../../styles/components/auth/RequestAccountCodeForm.module.css";
 
 export default function RequestAccountCodeForm() {
@@ -9,19 +10,70 @@ export default function RequestAccountCodeForm() {
   const [office, setOffice] = useState("");
   const [role, setRole] = useState("");
   const [description, setDescription] = useState("");
+  const [departments, setDepartments] = useState([]);
+  const [offices, setOffices] = useState([]);
+  const [rolesList, setRolesList] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Request account code", {
-      firstName,
-      lastName,
-      email,
-      department,
-      office,
-      role,
-      description,
-    });
+    (async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const apiBase = import.meta.env.VITE_API_URL || "http://localhost:3001";
+        const payload = {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          department_id: department || null,
+          office_id: office || null,
+          role_id: role || null,
+          user_description: description || null,
+        };
+
+        const res = await axios.post(`${apiBase}/api/account-code-requests`, payload);
+        if (res.data && res.data.ok) {
+          setSuccess("Request submitted successfully. We will review it shortly.");
+          // clear form
+          setFirstName("");
+          setLastName("");
+          setEmail("");
+          setDepartment("");
+          setOffice("");
+          setRole("");
+          setDescription("");
+        } else {
+          setError((res.data && res.data.message) || "Submission failed.");
+        }
+      } catch (err) {
+        setError(err?.response?.data?.message || err.message || "Server error");
+      } finally {
+        setLoading(false);
+      }
+    })();
   };
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:3001";
+    (async () => {
+      try {
+        const [dRes, oRes, rRes] = await Promise.all([
+          axios.get(`${apiBase}/api/lookups/departments`),
+          axios.get(`${apiBase}/api/lookups/offices`),
+          axios.get(`${apiBase}/api/lookups/roles`),
+        ]);
+        if (dRes.data && dRes.data.ok) setDepartments(dRes.data.items || []);
+        if (oRes.data && oRes.data.ok) setOffices(oRes.data.items || []);
+        if (rRes.data && rRes.data.ok) setRolesList(rRes.data.items || []);
+      } catch (err) {
+        console.warn('Failed to load lookups', err);
+      }
+    })();
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
@@ -72,10 +124,9 @@ export default function RequestAccountCodeForm() {
           required
         >
           <option value="">Select Department</option>
-          <option value="academic">Academic</option>
-          <option value="admin">Administration</option>
-          <option value="it">IT / Systems</option>
-          <option value="finance">Finance</option>
+          {departments.map((d) => (
+            <option key={d.id} value={d.id}>{d.name}</option>
+          ))}
         </select>
       </label>
 
@@ -88,10 +139,9 @@ export default function RequestAccountCodeForm() {
           required
         >
           <option value="">Select Office</option>
-          <option value="main">Main Office</option>
-          <option value="admin">Administration Office</option>
-          <option value="registrar">Registrar</option>
-          <option value="library">Library</option>
+          {offices.map((o) => (
+            <option key={o.id} value={o.id}>{o.name}</option>
+          ))}
         </select>
       </label>
 
@@ -104,10 +154,9 @@ export default function RequestAccountCodeForm() {
           required
         >
           <option value="">Select Role</option>
-          <option value="student">Student</option>
-          <option value="faculty">Faculty</option>
-          <option value="staff">Staff</option>
-          <option value="guest">Guest</option>
+          {rolesList.map((r) => (
+            <option key={r.id} value={r.id}>{r.name}</option>
+          ))}
         </select>
       </label>
 
@@ -121,9 +170,12 @@ export default function RequestAccountCodeForm() {
         />
       </label>
 
-      <button className={styles.primaryButton} type="submit">
-        Submit Request
+      <button className={styles.primaryButton} type="submit" disabled={loading}>
+        {loading ? "Submitting..." : "Submit Request"}
       </button>
+
+      {error && <p className={styles.errorText}>{error}</p>}
+      {success && <p className={styles.successText}>{success}</p>}
 
       <p className={styles.helpText}>
         Already have a Code? <a href="/register">Register Here</a>
